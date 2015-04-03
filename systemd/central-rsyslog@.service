@@ -1,0 +1,28 @@
+[Unit]
+Description=Centralised RSyslog
+After=docker.service
+
+[Service]
+User=core
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill central-rsyslog-%i
+ExecStartPre=-/usr/bin/docker rm central-rsyslog-%i
+ExecStartPre=/usr/bin/docker pull pindar/docker-rsyslog
+ExecStartPre=/usr/bin/sudo /usr/bin/mkdir -p /vol/logs
+
+ExecStart=/usr/bin/bash -c '\
+ELASTICSEARCH_ENDPOINT="$(etcdctl get /announce/services/elasticsearch-lb/logs/1 | awk \'/:/ { print $2 }\' | cut -d\'"\' -f 2)"; \
+/usr/bin/docker run \
+--name central-rsyslog-%i \
+-p 514:514 \
+-p 514:514/udp \
+-e ELASTICSEARCH_HOST=$ELASTICSEARCH_ENDPOINT \
+-v /vol/logs:/var/log/remote \
+pindar/docker-rsyslog'
+
+ExecStop=/usr/bin/docker stop central-rsyslog-%i
+
+[X-Fleet]
+Conflicts=central-rsyslog@*.service

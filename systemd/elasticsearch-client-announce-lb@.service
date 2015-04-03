@@ -1,0 +1,29 @@
+[Unit]
+Description=ElasticSearch client announcement service
+After=elasticsearch-client@%i.service
+BindsTo=elasticsearch-client@%i.service
+
+[Service]
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill elasticsearch-client-announce-lb-%i
+ExecStartPre=-/usr/bin/docker rm elasticsearch-client-announce-lb-%i
+ExecStartPre=/usr/bin/docker pull pindar/announcement-health-service
+
+ExecStart=/bin/sh -c '\
+/usr/bin/docker run \
+--name elasticsearch-client-announce-lb-%i \
+-e SERVICE=elasticsearch-lb \
+-e THRESHOLD=5 \
+-e TIMEOUT=45 \
+-e ENVIRONMENT=logs \
+-e NUMBER=%i \
+-e HOST_IP=${COREOS_PRIVATE_IPV4} \
+-e HEALTH_URL=http://${COREOS_PRIVATE_IPV4}:9200 \
+-e ANNOUNCE_VALUE=\'{"IP": "${COREOS_PRIVATE_IPV4}", "PORT": "9200", "TRANSPORT_PORT": "9300" }\' \
+pindar/announcement-health-service'
+
+ExecStop=/usr/bin/docker stop elasticsearch-client-announce-lb-%i
+
+[X-Fleet]
+MachineOf=elasticsearch-client@%i.service

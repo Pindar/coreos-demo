@@ -1,0 +1,29 @@
+[Unit]
+Description=Kibana logs front-end
+After=elasticsearch-announce@*.service
+Requires=elasticsearch-announce@*.service
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill kibana
+ExecStartPre=-/usr/bin/docker rm kibana
+ExecStartPre=/usr/bin/docker pull pindar/kibana
+
+ExecStart=/usr/bin/bash -c '\
+curl -f ${COREOS_PRIVATE_IPV4}:4001/v2/keys/announce/services/elasticsearch-lb/logs/; \
+  if [ "$?" = "0" ]; then \
+      ELASTICSEARCH_ENDPOINT="http://$(etcdctl get /announce/services/elasticsearch-lb/logs/1 | awk \'/:/ { print $2 }\' | cut -d\'"\' -f 2):9200"; \
+  else \
+      ELASTICSEARCH_ENDPOINT=""; \
+  fi; \
+/usr/bin/docker run \
+--name kibana \
+-e ELASTICSEARCH_ENDPOINT=$ELASTICSEARCH_ENDPOINT \
+-p 5601:5601 \
+pindar/kibana'
+
+ExecStop=/usr/bin/docker stop kibana
+
+[X-Fleet]
+Conflicts=kibana.service
