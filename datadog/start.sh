@@ -10,7 +10,7 @@ echo "[datadog] booting container. ETCD: $ETCD."
 
 # Put a watch `confd` process into the background to watch
 # for changes
-confd --log-level info -watch=true -node $ETCD &
+confd --log-level info -interval=30 -node $ETCD &
 echo "[datadog] confd is now monitoring etcd for changes..."
 
 # Start the datadog service using the generated config
