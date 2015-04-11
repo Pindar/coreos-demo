@@ -1,0 +1,25 @@
+[Unit]
+Description=Registrator for service registration/discovery (https://github.com/gliderlabs/registrator)
+
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker kill registrator
+ExecStartPre=-/usr/bin/docker rm registrator
+ExecStartPre=/usr/bin/docker pull gliderlabs/registrator
+
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run \
+    --name registrator \
+    -v /var/run/docker.sock:/tmp/docker.sock \
+    gliderlabs/registrator \
+    -ip ${COREOS_PRIVATE_IPV4} \
+    -ttl-refresh 30 \
+    -ttl 40 \
+    skydns2://${COREOS_PRIVATE_IPV4}:4001/staging.example.local"
+
+ExecStop=/usr/bin/docker stop registrator
+
+[X-Fleet]
+Global=true

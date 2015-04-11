@@ -1,0 +1,30 @@
+[Unit]
+Description=RabbitMQ service
+After=docker.service
+
+[Service]
+TimeoutSec=180
+EnvironmentFile=/etc/environment
+ExecStartPre=/usr/bin/docker pull rabbitmq:3-management
+
+ExecStart=/bin/bash -c '\
+  docker run \
+  -h $HOSTNAME \
+  -e RABBITMQ_NODENAME=%p-%i \
+  -e SERVICE_TAGS=mgmt \
+  -e SERVICE_ID=%p%i \
+  --dns ${COREOS_PRIVATE_IPV4} \
+  --dns-search=example.local \
+  --name %p-%i \
+  -p 8080:15672 \
+  -p 5672:5672 \
+  rabbitmq:3-management'
+
+ExecStop=/usr/bin/docker stop %p-%i
+ExecStop=/usr/bin/docker rm %p-%i
+
+[X-Fleet]
+Conflicts=%p@*.service
+Conflicts=rabbitmq@*.service
+
+

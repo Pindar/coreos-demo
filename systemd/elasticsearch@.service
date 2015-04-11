@@ -10,27 +10,23 @@ ExecStartPre=/usr/bin/mkdir -p /vol/data/elasticsearch
 ExecStartPre=/usr/bin/docker pull dockerfile/elasticsearch
 
 ExecStart=/bin/bash -c '\
-  curl -f ${COREOS_PRIVATE_IPV4}:4001/v2/keys/announce/services/elasticsearch/logs; \
-  if [ "$?" = "0" ]; then \
-      PEER_PATH=$(etcdctl ls /announce/services/elasticsearch/logs | head -1); \
-      UNICAST_HOSTS=$(etcdctl get $PEER_PATH | awk \'/:/ { print $2 }\' | cut -d\'"\' -f 2); \
-  else \
-      UNICAST_HOSTS=""; \
-  fi; \
   /usr/bin/docker run \
     --name %p-%i \
     -h `hostname` \
     --publish 9200:9200 \
     --publish 9300:9300 \
     --volume /vol/data/elasticsearch:/data \
+    -e SERVICE_ID=%p%i \
     -e ES_HEAP_SIZE=512M \
+    --dns ${COREOS_PRIVATE_IPV4} \
+    --dns-search=example.local \
     dockerfile/elasticsearch \
     /elasticsearch/bin/elasticsearch \
     --node.name=%p-%i \
     --cluster.name=logstash \
     --network.publish_host=${COREOS_PRIVATE_IPV4} \
     --discovery.zen.ping.multicast.enabled=false \
-    --discovery.zen.ping.unicast.hosts=$UNICAST_HOSTS'
+    --discovery.zen.ping.unicast.hosts=elasticsearch-9200.staging.example.local'
 
 ExecStop=/usr/bin/docker stop %p-%i
 ExecStop=/usr/bin/docker rm %p-%i

@@ -13,12 +13,14 @@ ExecStartPre=/usr/bin/docker pull pindar/docker-rsyslog
 ExecStartPre=/usr/bin/sudo /usr/bin/mkdir -p /vol/logs
 
 ExecStart=/usr/bin/bash -c '\
-ELASTICSEARCH_ENDPOINT="$(etcdctl get /announce/services/elasticsearch-lb/logs/1 | awk \'/:/ { print $2 }\' | cut -d\'"\' -f 2)"; \
 /usr/bin/docker run \
 --name central-rsyslog-%i \
 -p 514:514 \
 -p 514:514/udp \
--e ELASTICSEARCH_HOST=$ELASTICSEARCH_ENDPOINT \
+--dns ${COREOS_PRIVATE_IPV4} \
+--dns-search=example.local \
+-e ELASTICSEARCH_HOST=elasticsearch-9200.staging.example.local \
+-e SERVICE_ID=%p%i \
 -v /vol/logs:/var/log/remote \
 pindar/docker-rsyslog'
 

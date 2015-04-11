@@ -1,5 +1,5 @@
 [Unit]
-Description=kibana announcement service
+Description=kibana route53 announcement service
 
 After=docker.service
 BindsTo=kibana.service
