@@ -74,7 +74,7 @@ instances:
     skip_event: true
 
     tags:
-      - url:http://rabbitmq-15672.staging.example.com
+      - url:http://rabbitmq-15672.staging.example.local
       - environment:staging
 
 {{end}}
@@ -90,7 +90,7 @@ instances:
     collect_response_time: true
     skip_event: true
     tags:
-      - url:http://kibana.staging.example.com
+      - url:http://kibana.staging.example.local
       - environment:staging
 
 {{end}}
@@ -106,7 +106,7 @@ instances:
     collect_response_time: true
     skip_event: true
     tags:
-      - url:http://elasticsearch-9200.staging.example.com
+      - url:http://elasticsearch-9200.staging.example.local
       - environment:staging
 
 {{end}}
@@ -122,7 +122,7 @@ instances:
     collect_response_time: true
     skip_event: true
     tags:
-      - url:http://elasticsearch_client.staging.example.com
+      - url:http://elasticsearch_client.staging.example.local
       - environment:staging
 
 {{end}}
