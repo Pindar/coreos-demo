@@ -12,11 +12,11 @@ instances:
   # you will need to set `is_external` to true otherwise the check will compare
   # the local hostname against hostnames of the Elasticsearch nodes and only
   # submit metrics if they match.
-{{range gets "/skydns/local/example/staging/elasticsearch-9200/*"}}  
+{{$path:="/skydns/local/example/staging/elasticsearch-9200"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
   - url: http://{{ $data.host }}:{{ $data.port }}
     is_external: true
     tags:
      - 'environment:staging'
-{{end}}
+{{end}}{{end}}

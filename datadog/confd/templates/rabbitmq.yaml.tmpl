@@ -23,7 +23,7 @@ instances:
   # using the aliveness API. If you prefer only certain vhosts to be monitored
   # then you can list the vhosts you care about.
   #
-{{range gets "/skydns/local/example/staging/rabbitmq-15672/*"}}
+{{$path:="/skydns/local/example/staging/rabbitmq-15672"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
   - rabbitmq_api_url: http://{{$data.host}}:{{$data.port}}/api/
@@ -43,4 +43,4 @@ instances:
     # vhosts:
     #   - vhost1
     #   - vhost2
-{{end}}
+{{end}}{{end}}
