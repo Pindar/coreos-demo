@@ -16,4 +16,4 @@ echo "[datadog] confd is now monitoring etcd for changes..."
 # Start the datadog service using the generated config
 echo "[datadog] starting datadog service..."
 
-supervisord -n -c /etc/dd-agent/supervisor.conf --pidfile=/supervisord.pid
+exec supervisord -n -c /etc/dd-agent/supervisor.conf --pidfile=/supervisord.pid
