@@ -9,13 +9,13 @@ ExecStartPre=-/usr/bin/docker kill %p
 ExecStartPre=-/usr/bin/docker rm %p
 
 ExecStart=/usr/bin/bash -c \
-"/usr/bin/docker run --privileged --name %p -h `hostname` \
--v /var/run/docker.sock:/var/run/docker.sock \
--v /proc/mounts:/host/proc/mounts:ro \
--v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
--e API_KEY=`etcdctl get /operations/datadog/ddapikey` \
--e HOST_IP=${COREOS_PRIVATE_IPV4} \
-datadog/docker-dd-agent"
+  "exec docker run --privileged --name %p -h `hostname` \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /proc/mounts:/host/proc/mounts:ro \
+  -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+  -e API_KEY=`etcdctl get /operations/datadog/ddapikey` \
+  -e HOST_IP=${COREOS_PRIVATE_IPV4} \
+  datadog/docker-dd-agent"
 
 ExecStop=/usr/bin/docker stop %p
 

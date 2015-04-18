@@ -13,16 +13,16 @@ ExecStartPre=/usr/bin/docker pull pindar/docker-rsyslog
 ExecStartPre=/usr/bin/sudo /usr/bin/mkdir -p /vol/logs
 
 ExecStart=/usr/bin/bash -c '\
-/usr/bin/docker run \
---name central-rsyslog-%i \
--p 514:514 \
--p 514:514/udp \
---dns ${COREOS_PRIVATE_IPV4} \
---dns-search=example.local \
--e ELASTICSEARCH_HOST=elasticsearch-9200.staging.example.local \
--e SERVICE_ID=%p%i \
--v /vol/logs:/var/log/remote \
-pindar/docker-rsyslog'
+  exec docker run \
+  --name central-rsyslog-%i \
+  -p 514:514 \
+  -p 514:514/udp \
+  --dns ${COREOS_PRIVATE_IPV4} \
+  --dns-search=example.local \
+  -e ELASTICSEARCH_HOST=elasticsearch_client.staging.example.local \
+  -e SERVICE_ID=%p%i \
+  -v /vol/logs:/var/log/remote \
+  pindar/docker-rsyslog'
 
 ExecStop=/usr/bin/docker stop central-rsyslog-%i
 

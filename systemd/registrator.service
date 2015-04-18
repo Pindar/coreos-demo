@@ -3,6 +3,7 @@ Description=Registrator for service registration/discovery (https://github.com/g
 
 
 [Service]
+TimeoutSec=0
 TimeoutStartSec=0
 EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill registrator
@@ -10,7 +11,7 @@ ExecStartPre=-/usr/bin/docker rm registrator
 ExecStartPre=/usr/bin/docker pull gliderlabs/registrator
 
 ExecStart=/usr/bin/bash -c \
-"/usr/bin/docker run \
+  "exec docker run \
     --name registrator \
     -v /var/run/docker.sock:/tmp/docker.sock \
     gliderlabs/registrator \

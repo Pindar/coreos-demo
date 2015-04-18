@@ -9,14 +9,14 @@ ExecStartPre=-/usr/bin/docker rm kibana
 ExecStartPre=/usr/bin/docker pull pindar/kibana
 
 ExecStart=/usr/bin/bash -c '\
-/usr/bin/docker run \
---name kibana \
--e SERVICE_ID=1 \
---dns ${COREOS_PRIVATE_IPV4} \
---dns-search=example.local \
--e ELASTICSEARCH_ENDPOINT=http://elasticsearch_client.staging.example.local:9200 \
--p 5601:5601 \
-pindar/kibana'
+  exec docker run \
+  --name kibana \
+  -e SERVICE_ID=1 \
+  --dns ${COREOS_PRIVATE_IPV4} \
+  --dns-search=staging.example.example.local \
+  -e ELASTICSEARCH_ENDPOINT=http://elasticsearch_client.staging.example.local:9200 \
+  -p 5601:5601 \
+  pindar/kibana'
 
 ExecStop=/usr/bin/docker stop kibana
 

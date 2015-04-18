@@ -3,17 +3,14 @@ Description=RabbitMQ service
 After=docker.service
 
 [Service]
-TimeoutSec=180
+TimeoutSec=0
 EnvironmentFile=/etc/environment
 ExecStartPre=/usr/bin/docker pull rabbitmq:3
 ExecStartPre=/usr/bin/bash -c \
 "echo \"[{rabbit, [{cluster_nodes, {['rabbit@rabbitmqmgmt1', 'rabbit@rabbitmqmgmt2', 'rabbit@rabbitmq1'], disc}}, {loopback_users, []}]}].\" > /tmp/%p-%i"
 
-ExecStartPre=/usr/bin/bash -c \
-"echo 'AXBAOXWIVLSGFTYIMZFZ' > /tmp/%p-%i-erlang.cookie"
-
 ExecStart=/bin/bash -c '\
-  docker run \
+  exec docker run \
   -h %p%i \
   -e SERVICE_TAGS=mgmt \
   -e SERVICE_ID=%p%i \
