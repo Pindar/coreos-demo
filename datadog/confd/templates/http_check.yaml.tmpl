@@ -3,7 +3,7 @@ init_config:
   # ca_certs: /etc/ssl/certs/ca-certificates.crt
 
 instances:
-{{range gets "/skydns/local/example/staging/rabbitmq-15672/*"}}
+{{$path:="/skydns/local/example/staging/rabbitmq-15672"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
   - name: rabbitmq
@@ -77,9 +77,9 @@ instances:
       - url:http://rabbitmq-15672.staging.example.local
       - environment:staging
 
-{{end}}
+{{end}}{{end}}
 
-{{range gets "/skydns/local/example/staging/kibana/*"}}
+{{$path:="/skydns/local/example/staging/kibana"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
   - name: kibana
@@ -93,9 +93,9 @@ instances:
       - url:http://kibana.staging.example.local
       - environment:staging
 
-{{end}}
+{{end}}{{end}}
 
-{{range gets "/skydns/local/example/staging/elasticsearch-9200/*"}}
+{{$path:="/skydns/local/example/staging/elasticsearch-9200"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
   - name: elasticsearch-nodes
@@ -109,9 +109,9 @@ instances:
       - url:http://elasticsearch-9200.staging.example.local
       - environment:staging
 
-{{end}}
+{{end}}{{end}}
 
-{{range gets "/skydns/local/example/staging/elasticsearch_client/*"}}
+{{$path:="/skydns/local/example/staging/elasticsearch_client"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
   - name: elasticsearch-clients
@@ -125,4 +125,4 @@ instances:
       - url:http://elasticsearch_client.staging.example.local
       - environment:staging
 
-{{end}}
+{{end}}{{end}}

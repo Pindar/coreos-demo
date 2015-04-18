@@ -1,7 +1,7 @@
 init_config:
 
 instances:
-{{range gets "/operations/etcd/*"}}  
+{{$path:="/operations/etcd"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
   {{$data := json .Value}}
 
 # url, the API endpoint of your etcd instance
@@ -9,4 +9,4 @@ instances:
 # timeout, time to wait on a etcd API request
      timeout: 5
 
-{{ end }}
+{{ end }}{{ end }}
