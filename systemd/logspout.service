@@ -1,0 +1,24 @@
+[Unit]
+Description=Log shipper for all docker container on an host (https://github.com/gliderlabs/logspout)
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
+
+ExecStart=/usr/bin/bash -c '\
+  exec docker run \
+  --name %p \
+  -h $HOSTNAME \
+  --volume=/var/run/docker.sock:/tmp/docker.sock \
+  --dns ${COREOS_PRIVATE_IPV4} \
+  --dns-search=staging.example.example.local \
+  gliderlabs/logspout \
+  syslog://docker-rsyslog.staging.example.local:514'
+
+ExecStop=/usr/bin/docker stop %p
+
+[X-Fleet]
+Global=true
