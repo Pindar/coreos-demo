@@ -1,0 +1,27 @@
+[Unit]
+Description=kibana route53 announcement service
+
+After=docker.service
+BindsTo=kibana.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
+ExecStartPre=/usr/bin/docker pull pindar/go-route53-presence
+
+ExecStart=/usr/bin/bash -c \
+  "exec docker run \
+  --name %p \
+  -e AWS_ACCESS_KEY=`etcdctl get /AWS_USER_ROUTE53_KEY` \
+  -e AWS_SECRET_KEY=`etcdctl get /AWS_USER_ROUTE53_SECRET` \
+  -e ROUTE53_RECORD_NAME=logs.example.local. \
+  -e ROUTE53_RECORD_TYPE='A' \
+  -e ROUTE53_TTL=15 \
+  -e ROUTE53_ZONE_ID=`etcdctl get /AWS_ROUTE53_ZONE_ID` \
+  -e ROUTE53_IP_TYPE=private \
+  pindar/go-route53-presence"
+
+ExecStop=/usr/bin/docker stop %p
+
+[X-Fleet]
+MachineOf=kibana.service

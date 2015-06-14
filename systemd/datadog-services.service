@@ -1,0 +1,21 @@
+[Unit]
+Description=Monitoring Custom Services
+
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill dd-agent-services
+ExecStartPre=-/usr/bin/docker rm dd-agent-services
+
+ExecStart=/usr/bin/bash -c \
+  "exec docker run --privileged --name dd-agent-services -h `hostname` \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /proc/mounts:/host/proc/mounts:ro \
+  -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+  -e API_KEY=`etcdctl get /operations/datadog/ddapikey` \
+  -e HOST_IP=${COREOS_PRIVATE_IPV4} \
+  pindar/datadog-services"
+
+ExecStop=/usr/bin/docker stop dd-agent-services
+

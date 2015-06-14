@@ -1,0 +1,12 @@
+init_config:
+
+instances:
+{{$path:="/operations/etcd"}}{{if ls $path}}{{range gets (printf "%s/*" $path)}}
+  {{$data := json .Value}}
+
+# url, the API endpoint of your etcd instance
+   - url: "http://{{ $data.host }}:{{ $data.port }}"
+# timeout, time to wait on a etcd API request
+     timeout: 5
+
+{{ end }}{{ end }}
