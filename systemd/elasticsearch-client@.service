@@ -21,8 +21,8 @@ ExecStart=/bin/bash -c '\
   -e SERVICE_NAME=elasticsearch_client \
   --dns ${COREOS_PRIVATE_IPV4} \
   --dns-search=example.local \
-  dockerfile/elasticsearch \
-  /elasticsearch/bin/elasticsearch \
+  elasticsearch:1.5.2 \
+  elasticsearch \
   --node.name=%p-%i \
   --node.data=false \
   --node.master=false \
